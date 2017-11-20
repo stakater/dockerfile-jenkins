@@ -4,6 +4,8 @@ dockerfile for jenkins
 
 ## Source
 
+https://github.com/jenkinsci/docker
+
 https://hub.docker.com/r/jenkins/jenkins/
 
 ## Plugins
@@ -11,8 +13,7 @@ https://hub.docker.com/r/jenkins/jenkins/
 ### Required
 
 
-
-## 
+## Others
 
 * printenv
 * `HOME=/var/jenkins_home`
@@ -49,3 +50,9 @@ drwxr-xr-x 10 jenkins jenkins 4096 Nov 17 21:17 war
 ```
 
 * 
+
+
+## Building?
+
+Build an image:
+`docker build -t stakater/jenkins2 .`
