@@ -56,3 +56,8 @@ drwxr-xr-x 10 jenkins jenkins 4096 Nov 17 21:17 war
 
 Build an image:
 `docker build -t stakater/jenkins2 .`
+
+## References
+
+- old fabric8 jenkins image: `https://github.com/fabric8io/jenkins-docker`
+- current fabric8 jenkins image: `https://github.com/fabric8io/openshift-jenkins-s2i-config`
