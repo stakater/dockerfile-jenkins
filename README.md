@@ -49,8 +49,12 @@ drwxr-xr-x  3 jenkins jenkins 4096 Nov 17 21:17 users
 drwxr-xr-x 10 jenkins jenkins 4096 Nov 17 21:17 war
 ```
 
-* 
+* to check uid, gid and groups run a command `id`
 
+```
+bash-4.3$ id
+uid=1000(jenkins) gid=1000(jenkins) groups=1000(jenkins)
+```
 
 ## Building?
 
@@ -60,4 +64,7 @@ Build an image:
 ## References
 
 - old fabric8 jenkins image: `https://github.com/fabric8io/jenkins-docker`
-- current fabric8 jenkins image: `https://github.com/fabric8io/openshift-jenkins-s2i-config`
+- current fabric8 jenkins image: `https://github.com/openshift/jenkins` & `https://github.com/fabric8io/openshift-jenkins-s2i-config`
+- base jenkins docker image: `https://github.com/jenkinsci/docker/blob/master/Dockerfile-alpine`
+
+`find / -type d -name "*blueocean-git-pipeline*" -print`
