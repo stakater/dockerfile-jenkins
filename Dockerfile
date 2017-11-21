@@ -1,4 +1,4 @@
-FROM openjdk:8u121-jdk-alpine
+FROM stakater/oracle-jdk:8u144-alpine-3.6
 
 MAINTAINER Stakater Team
 
