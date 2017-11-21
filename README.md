@@ -113,3 +113,24 @@ fi
 # As argument is not jenkins, assume user want to run his own process, for sample a `bash` shell to explore this image
 exec "$@"
 ```
+
+---
+
+The typical workflow to support a matching volume from the default image is:
+
+- On the host machine, create a jenkins group with a GID that matches Jenkins Docker image
+- On the host machine, create a jenkins user with a UID that matches the Jenkins Docker image, and assign this user to the jenkins group, created
+- On the host machine, run Jenkins Docker container with a volume binding of your host machine jenkins user's home to the container's $JENKINS_HOME.
+
+It's reasonable to expect the creation of a jenkins user and group on the host system for typical usage, I'll suggest that it's better to set the jenkins UID and GID in the Jenkins Docker image to be within the system user UID range and system group GID range, respectively. Setting the UID and GID within the system ranges will avoid having the jenkins user display in GUI login screens (see here and here). Although Jenkins Docker should not be run on a server with a GUI environment in production, you can expect your users to try it out in desktop machines. (You can probably expect some users to run Jenkins Docker in "production" from desktop machines, too.)
+
+The major Linux distributions' user- and group-creation tools increment starting from SYS_UID_MIN and SYS_GID_MIN (100 on major Linux distros). RedHat/CentOS have a lower SYS_UID_MAX and SYS_GID_MAX (499). Assuming it's unlikely a system will have greater than 100 system users and groups, a value between 200 and 500 should be fine.
+
+Maybe check the FreeBSD registered UIDs and FreeBSD registered GIDs to get an idea of what other services might use to make a collision even more unlikely. (I realize this is for a Unix, not Linux, but all the more chance to avoid collision.)
+
+For example uid=386 and gid=386 meet all of the criteria above.
+
+With all this said, it is impossible to avoid a UID/GID collision in every possible scenario. The best Jenkins Docker project can do is pick a value with an unlikely collision, like 386, and provide clear documentation on how to deal with a collision. I described this process in #277 under the heading "More information on custom builds of Jenkins Docker (workaround 2):". (As a side note, kudos to the Jenkins Docker maintainers for exposing uid and gid as ARGs.)
+
+https://github.com/jenkinsci/docker/issues/112#issuecomment-228553691
+https://github.com/jenkinsci/docker/issues/277#issuecomment-226582397

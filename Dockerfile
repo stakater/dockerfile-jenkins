@@ -6,8 +6,9 @@ RUN apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils
 
 ARG user=jenkins
 ARG group=jenkins
-ARG uid=5000
-ARG gid=5000
+# why 386? Please read: https://github.com/jenkinsci/docker/issues/112#issuecomment-228553691
+ARG uid=386
+ARG gid=386
 ARG http_port=8080
 ARG agent_port=50000
 
