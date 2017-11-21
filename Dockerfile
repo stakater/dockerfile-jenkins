@@ -6,15 +6,15 @@ RUN apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils
 
 ARG user=jenkins
 ARG group=jenkins
-ARG uid=1000
-ARG gid=1000
+ARG uid=5000
+ARG gid=5000
 ARG http_port=8080
 ARG agent_port=50000
 
 ENV JENKINS_HOME /var/jenkins_home
 ENV JENKINS_SLAVE_AGENT_PORT ${agent_port}
 
-# Jenkins is run with user `jenkins`, uid = 1000
+# Jenkins is run with user `jenkins`, uid = 5000
 # If you bind mount a volume from the host or a data container, 
 # ensure you use the same uid
 RUN addgroup -g ${gid} ${group} \
