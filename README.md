@@ -2,6 +2,13 @@
 
 dockerfile for jenkins
 
+## Acknowledgement
+
+This Dockerfile is based on following:
+
+- [OpenShift Jenkins](https://github.com/openshift/jenkins)
+- [JenkinsCI Dockerfile for Jenkins for Alpine](https://github.com/jenkinsci/docker/tree/alpine)
+
 ## ToDo's
 
 - [ ] remove openshift pieces from run.sh
