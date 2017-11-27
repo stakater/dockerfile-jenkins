@@ -11,10 +11,20 @@ This Dockerfile is based on following:
 
 ## ToDo's
 
+- [ ] remove from base image
+```
+RUN     addgroup stakater && \
+        adduser -S -G stakater stakater && \
+        adduser -S -G stakater sudo
+
+# Expose the working directory
+VOLUME 	["/home/stakater"]
+```
 - [ ] run a plain jenkins without any plugins!
 - [ ] update to latest version of Jenkins
 - [ ] remove openshift pieces from run.sh
 - [ ] use JRE instead of JDK
+- [ ] ensure final running application becomes the container’s PID 1. 
 
 ## Source
 

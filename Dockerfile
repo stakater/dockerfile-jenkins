@@ -45,10 +45,13 @@ VOLUME /var/jenkins_home
 # or config file with your custom jenkins Docker image.
 RUN mkdir -p /usr/share/jenkins/ref/init.groovy.d
 
+## TODO: seems like this is not needed
+
 # Use tini as subreaper in Docker container to adopt zombie processes 
 RUN curl -fsSL https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-static-amd64 -o /bin/tini && chmod +x /bin/tini \
   && echo "$TINI_SHA  /bin/tini" | sha256sum -c -
 
+## TODO: is this needed? why is it needed?
 COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groovy
 
 # could use ADD but this one does not check Last-Modified header neither does it allow to control checksum 
@@ -66,6 +69,8 @@ EXPOSE ${AGENT_PORT}
 
 USER ${USER}
 
+## TODO: should clean this up?
+
 COPY jenkins-support.sh /usr/local/bin/jenkins-support.sh
 COPY jenkins.sh /usr/local/bin/jenkins.sh
 # from a derived Dockerfile, can use `RUN plugins.sh active.txt` to setup /usr/share/jenkins/ref/plugins from a support bundle
@@ -73,4 +78,9 @@ COPY plugins.sh /usr/local/bin/plugins.sh
 COPY install-plugins.sh /usr/local/bin/install-plugins.sh
 
 # TODO: fix this; use base image features here:
-ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
+# ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
+
+# Make daemon service dir for jenkins and place file
+# It will be started and maintained by the base image
+RUN 	mkdir -p /etc/service/jenkins
+ADD 	jenkins.sh /etc/service/jenkins/run
