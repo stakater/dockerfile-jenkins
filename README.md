@@ -11,6 +11,7 @@ This Dockerfile is based on following:
 
 ## ToDo's
 
+- [ ] run a plain jenkins without any plugins!
 - [ ] update to latest version of Jenkins
 - [ ] remove openshift pieces from run.sh
 - [ ] use JRE instead of JDK
@@ -156,6 +157,8 @@ most of the values for the arguments are obvious except for the value for JENKIN
 
 need to build the url manually and then download the file!
 
+
+https://repo.jenkins-ci.org/releases/org/jenkins-ci/main/jenkins-war/2.60.3/jenkins-war-2.60.3.war.sha1
 
 ---
 

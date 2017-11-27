@@ -57,9 +57,10 @@ RUN curl -fsSL ${JENKINS_URL} -o /usr/share/jenkins/jenkins.war
 
 RUN chown -R ${USER} "$JENKINS_HOME" /usr/share/jenkins/ref
 
+## Expose
+
 # for main web interface:
 EXPOSE ${HTTP_PORT}
-
 # will be used by attached slave agents:
 EXPOSE ${AGENT_PORT}
 
@@ -67,10 +68,9 @@ USER ${USER}
 
 COPY jenkins-support.sh /usr/local/bin/jenkins-support.sh
 COPY jenkins.sh /usr/local/bin/jenkins.sh
-
-# TODO: fix this; use base image features here:
-ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
-
 # from a derived Dockerfile, can use `RUN plugins.sh active.txt` to setup /usr/share/jenkins/ref/plugins from a support bundle
 COPY plugins.sh /usr/local/bin/plugins.sh
 COPY install-plugins.sh /usr/local/bin/install-plugins.sh
+
+# TODO: fix this; use base image features here:
+ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
