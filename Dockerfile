@@ -11,9 +11,7 @@ ARG UID=386
 ARG GID=386
 ARG HTTP_PORT=8080
 ARG AGENT_PORT=50000
-ARG JENKINS_VERSION=2.92
-# jenkins.war checksum, download will be validated using it
-ARG JENKINS_SHA=0131801e769febccd38d5128f587c4ac446ac596
+ARG JENKINS_VERSION=2.60.3
 # Can be used to customize where jenkins.war get downloaded from
 ARG JENKINS_URL=https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/${JENKINS_VERSION}/jenkins-war-${JENKINS_VERSION}.war
 
@@ -55,8 +53,7 @@ COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groov
 
 # could use ADD but this one does not check Last-Modified header neither does it allow to control checksum 
 # see https://github.com/docker/docker/issues/8331
-RUN curl -fsSL ${JENKINS_URL} -o /usr/share/jenkins/jenkins.war \
-  && echo "${JENKINS_SHA}  /usr/share/jenkins/jenkins.war" | sha256sum -c -
+RUN curl -fsSL ${JENKINS_URL} -o /usr/share/jenkins/jenkins.war
 
 RUN chown -R ${USER} "$JENKINS_HOME" /usr/share/jenkins/ref
 
