@@ -31,11 +31,11 @@ ENV JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
 
 RUN apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils
 
-# Jenkins is run with USER `jenkins`, UID = 5000
+# Jenkins is run with USER `jenkins`, UID = 386
 # If you bind mount a volume from the host or a data container, 
 # ensure you use the same UID
-RUN addGROUP -g ${GID} ${GROUP} \
-    && addUSER -h "$JENKINS_HOME" -u ${UID} -G ${GROUP} -s /bin/bash -D ${USER}
+RUN addgroup -g ${GID} ${GROUP} \
+    && adduser -h "$JENKINS_HOME" -u ${UID} -G ${GROUP} -s /bin/bash -D ${USER}
 
 # Jenkins home directory is a volume, so configuration and build history 
 # can be persisted and survive image upgrades
