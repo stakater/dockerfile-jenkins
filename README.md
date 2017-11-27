@@ -24,7 +24,9 @@ VOLUME 	["/home/stakater"]
 - [ ] update to latest version of Jenkins
 - [ ] remove openshift pieces from run.sh
 - [ ] use JRE instead of JDK
-- [ ] ensure final running application becomes the container’s PID 1. 
+- [ ] ensure final running application (jenkins) becomes the container’s PID 1. 
+- [ ] ensure it can't have root access
+- [ ] remove stakater user, group and volume from the base folder
 
 ## Source
 
@@ -83,6 +85,8 @@ uid=1000(jenkins) gid=1000(jenkins) groups=1000(jenkins)
 
 Build an image:
 `docker build -t stakater/jenkins2 .`
+
+docker run -it --rm stakater/jenkins2
 
 ## References
 

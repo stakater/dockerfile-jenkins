@@ -67,8 +67,6 @@ EXPOSE ${HTTP_PORT}
 # will be used by attached slave agents:
 EXPOSE ${AGENT_PORT}
 
-USER ${USER}
-
 ## TODO: should clean this up?
 
 COPY jenkins-support.sh /usr/local/bin/jenkins-support.sh
@@ -84,3 +82,5 @@ COPY install-plugins.sh /usr/local/bin/install-plugins.sh
 # It will be started and maintained by the base image
 RUN 	mkdir -p /etc/service/jenkins
 ADD 	jenkins.sh /etc/service/jenkins/run
+
+# USER ${USER}
