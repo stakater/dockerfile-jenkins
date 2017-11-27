@@ -83,4 +83,4 @@ COPY install-plugins.sh /usr/local/bin/install-plugins.sh
 RUN 	mkdir -p /etc/service/jenkins
 ADD 	jenkins.sh /etc/service/jenkins/run
 
-# USER ${USER}
+#USER ${USER}
