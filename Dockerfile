@@ -11,7 +11,7 @@ ARG UID=386
 ARG GID=386
 ARG HTTP_PORT=8080
 ARG AGENT_PORT=50000
-ARG JENKINS_VERSION=2.60.3
+ARG JENKINS_VERSION=2.92
 # Can be used to customize where jenkins.war get downloaded from
 ARG JENKINS_URL=https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/${JENKINS_VERSION}/jenkins-war-${JENKINS_VERSION}.war
 
@@ -26,6 +26,7 @@ ENV TINI_SHA 6c41ec7d33e857d4779f14d9c74924cab0c7973485d2972419a3b7c7620ff5fd
 ENV JENKINS_VERSION ${JENKINS_VERSION}
 ENV JENKINS_UC https://updates.jenkins.io
 ENV JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
+ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
 
 RUN apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils
 
@@ -43,7 +44,6 @@ VOLUME /var/jenkins_home
 # to set on a fresh new installation. Use it to bundle additional plugins 
 # or config file with your custom jenkins Docker image.
 RUN mkdir -p /usr/share/jenkins/ref/init.groovy.d
-
 
 # Use tini as subreaper in Docker container to adopt zombie processes 
 RUN curl -fsSL https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-static-amd64 -o /bin/tini && chmod +x /bin/tini \
@@ -63,12 +63,12 @@ EXPOSE ${HTTP_PORT}
 # will be used by attached slave agents:
 EXPOSE ${AGENT_PORT}
 
-ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
-
 USER ${USER}
 
 COPY jenkins-support.sh /usr/local/bin/jenkins-support.sh
 COPY jenkins.sh /usr/local/bin/jenkins.sh
+
+# TODO: fix this; use base image features here:
 ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
 
 # from a derived Dockerfile, can use `RUN plugins.sh active.txt` to setup /usr/share/jenkins/ref/plugins from a support bundle
