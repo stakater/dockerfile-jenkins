@@ -2,24 +2,40 @@ FROM stakater/oracle-jdk:8u144-alpine-3.6
 
 MAINTAINER Stakater Team
 
-RUN apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils
+## Arguments
 
-ARG user=jenkins
-ARG group=jenkins
+ARG USER=jenkins
+ARG GROUP=jenkins
 # why 386? Please read: https://github.com/jenkinsci/docker/issues/112#issuecomment-228553691
-ARG uid=386
-ARG gid=386
-ARG http_port=8080
-ARG agent_port=50000
+ARG UID=386
+ARG GID=386
+ARG HTTP_PORT=8080
+ARG AGENT_PORT=50000
+ARG JENKINS_VERSION=2.92
+# jenkins.war checksum, download will be validated using it
+ARG JENKINS_SHA=0131801e769febccd38d5128f587c4ac446ac596
+# Can be used to customize where jenkins.war get downloaded from
+ARG JENKINS_URL=https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/${JENKINS_VERSION}/jenkins-war-${JENKINS_VERSION}.war
+
+## Environment Variables
 
 ENV JENKINS_HOME /var/jenkins_home
-ENV JENKINS_SLAVE_AGENT_PORT ${agent_port}
+ENV JENKINS_SLAVE_AGENT_PORT ${AGENT_PORT}
+ENV TINI_VERSION 0.14.0
+# tini checksum, download will be validated using it
+ENV TINI_SHA 6c41ec7d33e857d4779f14d9c74924cab0c7973485d2972419a3b7c7620ff5fd
+# jenkins version being bundled in this docker image
+ENV JENKINS_VERSION ${JENKINS_VERSION}
+ENV JENKINS_UC https://updates.jenkins.io
+ENV JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
 
-# Jenkins is run with user `jenkins`, uid = 5000
+RUN apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils
+
+# Jenkins is run with USER `jenkins`, UID = 5000
 # If you bind mount a volume from the host or a data container, 
-# ensure you use the same uid
-RUN addgroup -g ${gid} ${group} \
-    && adduser -h "$JENKINS_HOME" -u ${uid} -G ${group} -s /bin/bash -D ${user}
+# ensure you use the same UID
+RUN addGROUP -g ${GID} ${GROUP} \
+    && addUSER -h "$JENKINS_HOME" -u ${UID} -G ${GROUP} -s /bin/bash -D ${USER}
 
 # Jenkins home directory is a volume, so configuration and build history 
 # can be persisted and survive image upgrades
@@ -30,8 +46,6 @@ VOLUME /var/jenkins_home
 # or config file with your custom jenkins Docker image.
 RUN mkdir -p /usr/share/jenkins/ref/init.groovy.d
 
-ENV TINI_VERSION 0.14.0
-ENV TINI_SHA 6c41ec7d33e857d4779f14d9c74924cab0c7973485d2972419a3b7c7620ff5fd
 
 # Use tini as subreaper in Docker container to adopt zombie processes 
 RUN curl -fsSL https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-static-amd64 -o /bin/tini && chmod +x /bin/tini \
@@ -39,34 +53,22 @@ RUN curl -fsSL https://github.com/krallin/tini/releases/download/v${TINI_VERSION
 
 COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groovy
 
-# jenkins version being bundled in this docker image
-ARG JENKINS_VERSION
-ENV JENKINS_VERSION ${JENKINS_VERSION:-2.60.3}
-
-# jenkins.war checksum, download will be validated using it
-ARG JENKINS_SHA=2d71b8f87c8417f9303a73d52901a59678ee6c0eefcf7325efed6035ff39372a
-
-# Can be used to customize where jenkins.war get downloaded from
-ARG JENKINS_URL=https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/${JENKINS_VERSION}/jenkins-war-${JENKINS_VERSION}.war
-
 # could use ADD but this one does not check Last-Modified header neither does it allow to control checksum 
 # see https://github.com/docker/docker/issues/8331
 RUN curl -fsSL ${JENKINS_URL} -o /usr/share/jenkins/jenkins.war \
   && echo "${JENKINS_SHA}  /usr/share/jenkins/jenkins.war" | sha256sum -c -
 
-ENV JENKINS_UC https://updates.jenkins.io
-ENV JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
-RUN chown -R ${user} "$JENKINS_HOME" /usr/share/jenkins/ref
+RUN chown -R ${USER} "$JENKINS_HOME" /usr/share/jenkins/ref
 
 # for main web interface:
-EXPOSE ${http_port}
+EXPOSE ${HTTP_PORT}
 
 # will be used by attached slave agents:
-EXPOSE ${agent_port}
+EXPOSE ${AGENT_PORT}
 
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
 
-USER ${user}
+USER ${USER}
 
 COPY jenkins-support.sh /usr/local/bin/jenkins-support.sh
 COPY jenkins.sh /usr/local/bin/jenkins.sh

@@ -11,13 +11,13 @@ This Dockerfile is based on following:
 
 ## ToDo's
 
+- [ ] update to latest version of Jenkins
 - [ ] remove openshift pieces from run.sh
-- [ ] 
+- [ ] use JRE instead of JDK
 
 ## Source
 
 https://github.com/jenkinsci/docker
-
 https://hub.docker.com/r/jenkins/jenkins/
 
 ## Plugins
@@ -147,6 +147,14 @@ With all this said, it is impossible to avoid a UID/GID collision in every possi
 
 https://github.com/jenkinsci/docker/issues/112#issuecomment-228553691
 https://github.com/jenkinsci/docker/issues/277#issuecomment-226582397
+
+---
+
+## Jenkins sha / checksum
+
+most of the values for the arguments are obvious except for the value for JENKINS_SHA. I have found these values located in the corresponding subdirectory of your desired Jenkins version under https://repo.jenkins-ci.org/releases/org/jenkins-ci/main/jenkins-war/. For example, the SHA1 checksum for Jenkins 2.2 is located at https://repo.jenkins-ci.org/releases/org/jenkins-ci/main/jenkins-war/2.2/jenkins-war-2.2.war.sha1
+
+need to build the url manually and then download the file!
 
 
 ---
