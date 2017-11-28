@@ -88,6 +88,10 @@ Build an image:
 
 `docker run -it --rm stakater/jenkins2`
 
+`docker run -it --init --rm stakater/jenkins2:latest /bin/sh`
+
+`--init` does the cleanup and makes "CTRL + C" to work
+
 ## References
 
 - old fabric8 jenkins image: `https://github.com/fabric8io/jenkins-docker`

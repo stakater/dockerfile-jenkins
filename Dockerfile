@@ -4,8 +4,8 @@ MAINTAINER Stakater Team
 
 ## Arguments
 
-ARG USER=stakater
-ARG GROUP=stakater
+ARG USER=jenkins
+ARG GROUP=jenkins
 # why 386? Please read: https://github.com/jenkinsci/docker/issues/112#issuecomment-228553691
 ARG UID=386
 ARG GID=386
@@ -30,8 +30,8 @@ RUN apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils
 # Jenkins is run with USER `jenkins`, UID = 386
 # If you bind mount a volume from the host or a data container, 
 # ensure you use the same UID
-#RUN addgroup -g ${GID} ${GROUP} \
-#    && adduser -h "$JENKINS_HOME" -u ${UID} -G ${GROUP} -s /bin/bash -D ${USER}
+RUN addgroup -g ${GID} ${GROUP} \
+    && adduser -h "$JENKINS_HOME" -u ${UID} -G ${GROUP} -s /bin/bash -D ${USER}
 
 # Jenkins home directory is a volume, so configuration and build history 
 # can be persisted and survive image upgrades
@@ -68,7 +68,9 @@ COPY install-plugins.sh /usr/local/bin/install-plugins.sh
 
 # Make daemon service dir for jenkins and place file
 # It will be started and maintained by the base image
-RUN mkdir -p /etc/service/jenkins
-ADD jenkins.sh /etc/service/jenkins/run
+# RUN mkdir -p /etc/service/jenkins
+# ADD jenkins.sh /etc/service/jenkins/run
 
 USER ${USER}
+
+ENTRYPOINT ["/usr/local/bin/jenkins.sh"]
