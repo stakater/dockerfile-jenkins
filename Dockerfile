@@ -4,8 +4,8 @@ MAINTAINER Stakater Team
 
 ## Arguments
 
-ARG USER=jenkins
-ARG GROUP=jenkins
+ARG USER=stakater
+ARG GROUP=stakater
 # why 386? Please read: https://github.com/jenkinsci/docker/issues/112#issuecomment-228553691
 ARG UID=386
 ARG GID=386
@@ -19,9 +19,6 @@ ARG JENKINS_URL=https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-w
 
 ENV JENKINS_HOME /var/jenkins_home
 ENV JENKINS_SLAVE_AGENT_PORT ${AGENT_PORT}
-ENV TINI_VERSION 0.14.0
-# tini checksum, download will be validated using it
-ENV TINI_SHA 6c41ec7d33e857d4779f14d9c74924cab0c7973485d2972419a3b7c7620ff5fd
 # jenkins version being bundled in this docker image
 ENV JENKINS_VERSION ${JENKINS_VERSION}
 ENV JENKINS_UC https://updates.jenkins.io
@@ -33,8 +30,8 @@ RUN apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils
 # Jenkins is run with USER `jenkins`, UID = 386
 # If you bind mount a volume from the host or a data container, 
 # ensure you use the same UID
-RUN addgroup -g ${GID} ${GROUP} \
-    && adduser -h "$JENKINS_HOME" -u ${UID} -G ${GROUP} -s /bin/bash -D ${USER}
+#RUN addgroup -g ${GID} ${GROUP} \
+#    && adduser -h "$JENKINS_HOME" -u ${UID} -G ${GROUP} -s /bin/bash -D ${USER}
 
 # Jenkins home directory is a volume, so configuration and build history 
 # can be persisted and survive image upgrades
@@ -44,12 +41,6 @@ VOLUME /var/jenkins_home
 # to set on a fresh new installation. Use it to bundle additional plugins 
 # or config file with your custom jenkins Docker image.
 RUN mkdir -p /usr/share/jenkins/ref/init.groovy.d
-
-## TODO: seems like this is not needed
-
-# Use tini as subreaper in Docker container to adopt zombie processes 
-RUN curl -fsSL https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-static-amd64 -o /bin/tini && chmod +x /bin/tini \
-  && echo "$TINI_SHA  /bin/tini" | sha256sum -c -
 
 ## TODO: is this needed? why is it needed?
 COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groovy
@@ -75,12 +66,9 @@ COPY jenkins.sh /usr/local/bin/jenkins.sh
 COPY plugins.sh /usr/local/bin/plugins.sh
 COPY install-plugins.sh /usr/local/bin/install-plugins.sh
 
-# TODO: fix this; use base image features here:
-# ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
-
 # Make daemon service dir for jenkins and place file
 # It will be started and maintained by the base image
-RUN 	mkdir -p /etc/service/jenkins
-ADD 	jenkins.sh /etc/service/jenkins/run
+RUN mkdir -p /etc/service/jenkins
+ADD jenkins.sh /etc/service/jenkins/run
 
-#USER ${USER}
+USER ${USER}

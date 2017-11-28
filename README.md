@@ -86,7 +86,7 @@ uid=1000(jenkins) gid=1000(jenkins) groups=1000(jenkins)
 Build an image:
 `docker build -t stakater/jenkins2 .`
 
-docker run -it --rm stakater/jenkins2
+`docker run -it --rm stakater/jenkins2`
 
 ## References
 
