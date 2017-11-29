@@ -221,7 +221,7 @@ JAVA_OPTS="${JAVA_OPTS} -Djavamelody.application-name=${JENKINS_SERVICE_NAME}"
 # if `docker run` first argument start with `--` the user is passing jenkins launcher arguments
 # TODO: hardcoded - /usr/lib/jenkins/jenkins.war ??
 if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]]; then
-   exec java $JAVA_GC_OPTS $JAVA_INITIAL_HEAP_PARAM $JAVA_MAX_HEAP_PARAM -Duser.home=${HOME} $JAVA_CORE_LIMIT $JAVA_DIAGNOSTICS $JAVA_OPTS -Dfile.encoding=UTF8 -jar /usr/lib/jenkins/jenkins.war $JENKINS_OPTS $JENKINS_ACCESSLOG "$@"
+   exec java $JAVA_GC_OPTS $JAVA_INITIAL_HEAP_PARAM $JAVA_MAX_HEAP_PARAM -Duser.home=${HOME} $JAVA_CORE_LIMIT $JAVA_DIAGNOSTICS $JAVA_OPTS -Dfile.encoding=UTF8 -jar ${JENKINS_WAR_PATH}/jenkins.war $JENKINS_OPTS $JENKINS_ACCESSLOG "$@"
 fi
 
 # As argument is not jenkins, assume user want to run his own process, for sample a `bash` shell to explore this image
