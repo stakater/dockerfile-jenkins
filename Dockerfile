@@ -17,6 +17,8 @@ ARG JENKINS_URL=https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-w
 
 ## Environment Variables
 
+ENV IMAGE_CONFIG_DIR /usr/local/bin
+ENV JENKINS_WAR_PATH /usr/share/jenkins
 ENV JENKINS_HOME /var/jenkins_home
 ENV JENKINS_SLAVE_AGENT_PORT ${AGENT_PORT}
 # jenkins version being bundled in this docker image
@@ -47,7 +49,7 @@ COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groov
 
 # could use ADD but this one does not check Last-Modified header neither does it allow to control checksum 
 # see https://github.com/docker/docker/issues/8331
-RUN curl -fsSL ${JENKINS_URL} -o /usr/share/jenkins/jenkins.war
+RUN curl -fsSL ${JENKINS_URL} -o ${JENKINS_WAR_PATH}/jenkins.war
 
 RUN chown -R ${USER} "$JENKINS_HOME" /usr/share/jenkins/ref
 
@@ -60,7 +62,7 @@ EXPOSE ${AGENT_PORT}
 
 ## TODO: should clean this up?
 
-COPY ./contrib /usr/local/bin
+COPY ./contrib ${IMAGE_CONFIG_DIR}
 
 ## TODO - need to fix following:
 
@@ -69,7 +71,9 @@ COPY ./contrib /usr/local/bin
 # RUN mkdir -p /etc/service/jenkins
 # ADD jenkins.sh /etc/service/jenkins/run
 
-USER ${USER}
+# TODO : need to uncomment it!
+
+# USER ${USER}
 
 # ENTRYPOINT ["/usr/local/bin/run.sh"]
 ENTRYPOINT []

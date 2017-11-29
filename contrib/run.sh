@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 # This script runs the Jenkins server inside the Docker container.
+#
 # It copies the configuration and plugins from /opt/openshift/configuration to
 # ${JENKINS_HOME}.
 #
@@ -93,7 +94,7 @@ function install_plugins() {
 # java -version
 # java -d64 -version # If its not 64 JVM then it will say; This Java instance does not support a 64-bit JVM. Please install the desired version.
 
-image_config_dir="/opt/openshift/configuration"
+image_config_dir=${IMAGE_CONFIG_DIR}
 image_config_path="${image_config_dir}/config.xml"
 
 CONTAINER_MEMORY_IN_BYTES=`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`
@@ -139,14 +140,15 @@ fi
 
 # Since OpenShift runs this Docker image under random user ID, we have to assign
 # the 'jenkins' user name to this UID.
-generate_passwd_file
+## generate_passwd_file
 
-mkdir /tmp/war
-unzip -q /usr/lib/jenkins/jenkins.war -d /tmp/war
-if [ -e ${JENKINS_HOME}/password ]; then
-  old_salt=$(cat ${JENKINS_HOME}/password | sed 's/:.*//')
-fi
-new_password_hash=`obfuscate_password ${JENKINS_PASSWORD:-password} $old_salt`
+## mkdir /tmp/war
+# TODO: bad its hardcoded! Need to uncomment it
+## unzip -q ${JENKINS_WAR_PATH}/jenkins.war -d /tmp/war
+## if [ -e ${JENKINS_HOME}/password ]; then
+##  old_salt=$(cat ${JENKINS_HOME}/password | sed 's/:.*//')
+## fi
+## new_password_hash=`obfuscate_password ${JENKINS_PASSWORD:-password} $old_salt`
 
 # finish the move of the default logs dir, /var/log/jenkins, to the volume mount
 mkdir ${JENKINS_HOME}/logs
