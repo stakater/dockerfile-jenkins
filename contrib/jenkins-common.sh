@@ -16,9 +16,7 @@ function generate_passwd_file() {
   GROUP_ID=$(id -g)
 
   if [ x"$USER_ID" != x"0" -a x"$USER_ID" != x"997" ]; then
-
     echo "default:x:${USER_ID}:${GROUP_ID}:Default Application User:${HOME}:/sbin/nologin" >> /etc/passwd
-
   fi
 }
 
