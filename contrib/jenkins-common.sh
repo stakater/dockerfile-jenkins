@@ -4,7 +4,6 @@
 
 export JENKINS_HOME=/var/lib/jenkins
 export CONFIG_PATH=${JENKINS_HOME}/config.xml
-export OPENSHIFT_API_URL=https://openshift.default.svc.cluster.local
 export KUBE_SA_DIR=/run/secrets/kubernetes.io/serviceaccount
 export KUBE_CA=${KUBE_SA_DIR}/ca.crt
 export AUTH_TOKEN=${KUBE_SA_DIR}/token

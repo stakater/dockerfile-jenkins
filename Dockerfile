@@ -60,11 +60,9 @@ EXPOSE ${AGENT_PORT}
 
 ## TODO: should clean this up?
 
-COPY jenkins-support.sh /usr/local/bin/jenkins-support.sh
-COPY jenkins.sh /usr/local/bin/jenkins.sh
-# from a derived Dockerfile, can use `RUN plugins.sh active.txt` to setup /usr/share/jenkins/ref/plugins from a support bundle
-COPY plugins.sh /usr/local/bin/plugins.sh
-COPY install-plugins.sh /usr/local/bin/install-plugins.sh
+COPY ./contrib /usr/local/bin
+
+## TODO - need to fix following:
 
 # Make daemon service dir for jenkins and place file
 # It will be started and maintained by the base image
@@ -73,4 +71,6 @@ COPY install-plugins.sh /usr/local/bin/install-plugins.sh
 
 USER ${USER}
 
-ENTRYPOINT ["/usr/local/bin/jenkins.sh"]
+# ENTRYPOINT ["/usr/local/bin/run.sh"]
+ENTRYPOINT []
+CMD ["/usr/local/bin/run.sh"]

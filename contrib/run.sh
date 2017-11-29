@@ -89,25 +89,9 @@ function install_plugins() {
   fi
 }
 
-#NOTE:  periodically check https://ce-gitlab.usersys.redhat.com/ce/jboss-dockerfiles/blob/develop/scripts/os-java-run/added/java-default-options for updates
-
-#get the fully qualified paths to both 32 and 64 bit java
-JVMPath32bit=`alternatives --display java | grep family | grep i386 | awk '{print $1}'`
-JVMPath64bit=`alternatives --display java | grep family | grep x86_64 | awk '{print $1}'`
-
-
-# set the java version used based on OPENSHIFT_JENKINS_JVM_ARCH
-if [ -z $OPENSHIFT_JENKINS_JVM_ARCH  ]; then
-    echo "Using 64 bit Java since OPENSHIFT_JENKINS_JVM_ARCH is not set (historic setting)"
-    alternatives --set java $JVMPath64bit
-elif [ "${OPENSHIFT_JENKINS_JVM_ARCH}" == "x86_64"  ]; then
-    echo "64 bit Java explicitly set in OPENSHIFT_JENKINS_JVM_ARCH"
-    alternatives --set java $JVMPath64bit
-else
-    echo "OPENSHIFT_JENKINS_JVM_ARCH is set to ${OPENSHIFT_JENKINS_JVM_ARCH} so using 32 bit Java"
-    alternatives --set java $JVMPath32bit
-    export MALLOC_ARENA_MAX=1
-fi
+# echo $JAVA_HOME
+# java -version
+# java -d64 -version # If its not 64 JVM then it will say; This Java instance does not support a 64-bit JVM. Please install the desired version.
 
 image_config_dir="/opt/openshift/configuration"
 image_config_path="${image_config_dir}/config.xml"
@@ -126,11 +110,6 @@ if [ "${CONTAINER_MEMORY_IN_BYTES}" -lt "${DEFAULT_MEMORY_CEILING}" ]; then
     HEAP_LIMIT_FOR_32BIT=$((2**32-1))
     HEAP_LIMIT_FOR_32BIT_IN_MB=$((${HEAP_LIMIT_FOR_32BIT}/1024**2))
     CONTAINER_HEAP_MAX=$(echo "${CONTAINER_MEMORY_IN_MB} ${CONTAINER_HEAP_PERCENT}" | awk '{ printf "%d", $1 * $2 }')
-    if [[ -z $OPENSHIFT_JENKINS_JVM_ARCH && "${CONTAINER_HEAP_MAX}" -lt "${HEAP_LIMIT_FOR_32BIT_IN_MB}"  ]]; then
-      echo "max heap in MB is ${CONTAINER_HEAP_MAX} and 64 bit was not explicitly set so using 32 bit Java"
-      alternatives --set java $JVMPath32bit
-      export MALLOC_ARENA_MAX=1
-    fi
 
     JAVA_MAX_HEAP_PARAM="-Xmx${CONTAINER_HEAP_MAX}m"
     if [ -z $CONTAINER_INITIAL_PERCENT ]; then
