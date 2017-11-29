@@ -159,7 +159,7 @@ if [ ! -e ${JENKINS_HOME}/configured ]; then
     create_jenkins_config_from_templates
 
     echo "Copying Jenkins configuration to ${JENKINS_HOME} ..."
-    cp -r /opt/openshift/configuration/* ${JENKINS_HOME}
+    cp -r ${IMAGE_CONFIG_DIR}/configuration/* ${JENKINS_HOME}
 
     install_plugins
 
