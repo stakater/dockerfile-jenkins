@@ -29,12 +29,6 @@ export JNLP_PORT=${JNLP_PORT:-50000}
 NODEJS_SLAVE=${NODEJS_SLAVE_IMAGE:-registry.access.redhat.com/openshift3/jenkins-slave-nodejs-rhel7}
 MAVEN_SLAVE=${MAVEN_SLAVE_IMAGE:-registry.access.redhat.com/openshift3/jenkins-slave-maven-rhel7}
 DOTNET_20_SLAVE=${DOTNET_20_SLAVE:-registry.access.redhat.com/dotnet/dotnet-20-jenkins-slave-rhel7}
-# if the master is running the centos image, use the centos slave images.
-if [[ `grep CentOS /etc/redhat-release` ]]; then
-  NODEJS_SLAVE=${NODEJS_SLAVE_IMAGE:-openshift/jenkins-slave-nodejs-centos7}
-  MAVEN_SLAVE=${MAVEN_SLAVE_IMAGE:-openshift/jenkins-slave-maven-centos7}
-  DOTNET_20_SLAVE=${DOTNET_20_SLAVE:-registry.centos.org/dotnet/dotnet-20-jenkins-slave-centos7}
-fi
 
 JENKINS_SERVICE_NAME=${JENKINS_SERVICE_NAME:-JENKINS}
 JENKINS_SERVICE_NAME=`echo ${JENKINS_SERVICE_NAME} | tr '[a-z]' '[A-Z]' | tr '-' '_'`
