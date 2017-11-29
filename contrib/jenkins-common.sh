@@ -2,7 +2,7 @@
 
 ## source - https://github.com/openshift/jenkins/blob/master/2/contrib/jenkins/jenkins-common.sh
 
-export JENKINS_HOME=/var/lib/jenkins
+# export JENKINS_HOME=/var/lib/jenkins
 export CONFIG_PATH=${JENKINS_HOME}/config.xml
 export KUBE_SA_DIR=/run/secrets/kubernetes.io/serviceaccount
 export KUBE_CA=${KUBE_SA_DIR}/ca.crt
