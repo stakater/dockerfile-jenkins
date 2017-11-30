@@ -79,9 +79,11 @@ function install_plugins() {
     done
 
     # Call install plugins with the temporary file
+    echo "Calling install-plugins.sh"
     /usr/local/bin/install-plugins.sh "${plugins_file}"
   fi
-  
+
+  # TODO fix this!
   if [ "$(ls -A /opt/openshift/plugins 2>/dev/null)" ]; then
     mkdir -p ${JENKINS_HOME}/plugins
     echo "Copying $(ls /opt/openshift/plugins | wc -l) Jenkins plugins to ${JENKINS_HOME} ..."
@@ -161,12 +163,13 @@ if [ ! -e ${JENKINS_HOME}/configured ]; then
     echo "Copying Jenkins configuration to ${JENKINS_HOME} ..."
     cp -r ${IMAGE_CONFIG_DIR}/configuration/* ${JENKINS_HOME}
 
+    echo "Installing plugins"
     install_plugins
 
     echo "Creating initial Jenkins 'admin' user ..."
     
     update_admin_password
-    
+
     touch ${JENKINS_HOME}/configured
 else  
   if [ ! -z "${OVERRIDE_PV_CONFIG_WITH_IMAGE_CONFIG}" ]; then
@@ -182,6 +185,7 @@ else
     echo "Overriding plugins stored in ${JENKINS_HOME}/plugins"
     rm -rf ${JENKINS_HOME}/plugins
 
+    echo "Installing plugins"
     install_plugins
   fi  
 fi
