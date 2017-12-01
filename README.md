@@ -20,6 +20,7 @@ RUN     addgroup stakater && \
 # Expose the working directory
 VOLUME 	["/home/stakater"]
 ```
+- fix installation of plugins! that stops Jenkins from starting...
 - [ ] run a plain jenkins without any plugins!
 - [ ] update to latest version of Jenkins
 - [ ] remove openshift pieces from run.sh
@@ -277,3 +278,81 @@ USER 1001
 ENTRYPOINT []
 CMD ["/usr/libexec/s2i/run"]
 ```
+
+---
+
+Jenkins home directory of a working Jenkins has following stuff:
+
+```
+bash-4.2$ cd /var/lib/jenkins/                                                                                                 
+bash-4.2$ ls -l
+total 316
+drwxr-xr-x.   3 default root  4096 Nov 23 10:04 caches
+-rw-r--r--.   1 default root   365 Nov 17 14:36 com.dabsquared.gitlabjenkins.GitLabPushTrigger.xml
+-rw-r--r--.   1 default root   604 Nov 23 11:17 com.dabsquared.gitlabjenkins.connection.GitLabConnectionConfig.xml
+-rw-r--r--.   1 default root  4687 Nov 23 11:17 config.xml
+-rw-r--r--.   1 default root  4063 Nov 17 14:35 config.xml.tpl
+-rw-r--r--.   1 default root     0 Nov 17 14:35 configured
+drwxr-xr-x.   3 default root  4096 Nov 23 10:05 fingerprints
+-rw-r--r--.   1 default root   159 Nov 23 11:17 hudson.model.UpdateCenter.xml
+-rw-r--r--.   1 default root   370 Nov 17 14:36 hudson.plugins.git.GitTool.xml
+-rw-r--r--.   1 default root   222 Nov 17 14:36 hudson.plugins.openid.OpenIdLoginService$GlobalConfigurationImpl.xml
+-rw-r--r--.   1 default root   569 Nov 17 14:35 hudson.tasks.Maven.xml
+-rw-------.   1 default root  1712 Nov 17 14:36 identity.key.enc
+-rw-r--r--.   1 default root   309 Nov 25 21:13 io.fabric8.jenkins.openshiftsync.GlobalPluginConfiguration.xml
+-rw-r--r--.   1 default root   196 Nov 23 10:04 jenkins.model.JenkinsLocationConfiguration.xml
+-rw-r--r--.   1 default root   820 Nov 17 14:35 jenkins.plugins.nodejs.tools.NodeJSInstallation.xml
+drwxr-xr-x.   3 default root  4096 Nov 23 10:04 jobs
+-rw-r--r--.   1 default root    39 Nov 17 14:35 keycloak.url
+drwxr-xr-x.   5 default root  4096 Nov 29 15:32 logs
+-rw-r--r--.   1 default root   907 Nov 23 11:17 nodeMonitors.xml
+drwxr-xr-x.   2 default root  4096 Nov 26 10:39 nodes
+-rw-r--r--.   1 default root   135 Nov 17 14:35 org.jenkinsci.main.modules.sshd.SSHD.xml
+-rw-r--r--.   1 default root  1172 Nov 23 11:17 org.jenkinsci.plugins.ghprb.GhprbTrigger.xml
+-rw-r--r--.   1 default root   236 Nov 23 11:17 org.jenkinsci.plugins.updatebot.GlobalPluginConfiguration.xml
+-rw-r--r--.   1 default root    46 Nov 26 10:39 org.jenkinsci.plugins.workflow.flow.FlowExecutionList.xml
+-rw-r--r--.   1 default root    72 Nov 17 14:35 password
+drwxr-xr-x. 137 default root 12288 Nov 23 11:16 plugins
+-rw-r--r--.   1 default root  1079 Nov 17 14:35 pre-shutdown.sh
+-rw-r--r--.   1 default root   130 Nov 23 11:16 queue.xml.bak
+-rw-r--r--.   1 default root 18940 Nov 17 14:35 scriptApproval.xml
+-rw-r--r--.   1 default root    64 Nov 17 14:35 secret.key
+-rw-r--r--.   1 default root     0 Nov 17 14:35 secret.key.not-so-secret
+drwx------.   4 default root  4096 Nov 23 10:05 secrets
+drwxr-xr-x.   2 default root  4096 Nov 30 11:17 updates
+drwxr-xr-x.   2 default root  4096 Nov 17 14:36 userContent
+drwxr-xr-x.   3 default root  4096 Nov 23 10:04 users
+drwxr-xr-x.  10 default root  4096 Nov 17 14:35 war
+drwxr-xr-x.   2 default root  4096 Nov 17 14:36 workflow-libs
+```
+
+when Jenkins started although un-successfully the directory looks like this:
+
+```
+-rw-r--r--  1 root root 2301 Nov 30 11:33 config.xml
+-rw-r--r--  1 root root 2328 Nov 30 11:33 config.xml.tpl
+-rw-r--r--  1 root root    0 Nov 30 11:33 configured
+-rw-r--r--  1 root root  281 Nov 30 11:33 credentials.xml
+-rw-r--r--  1 root root  311 Nov 30 11:33 credentials.xml.tpl
+-rw-r--r--  1 root root   29 Nov 30 11:33 failed-boot-attempts.txt
+-rw-r--r--  1 root root  156 Nov 30 11:33 hudson.model.UpdateCenter.xml
+-rw-------  1 root root 1712 Nov 30 11:33 identity.key.enc
+-rw-r--r--  1 root root 1500 Nov 30 11:33 jenkins.CLI.xml
+drwxr-xr-x  2 root root 4096 Nov 30 11:33 jobs
+drwxr-xr-x  2 root root 4096 Nov 30 11:33 logs
+-rw-r--r--  1 root root  136 Nov 30 11:33 org.jenkinsci.main.modules.sshd.SSHD.xml
+-rw-r--r--  1 root root    1 Nov 30 11:33 password
+drwxr-xr-x  2 root root 4096 Nov 30 11:33 plugins
+-rw-r--r--  1 root root  129 Nov 30 11:33 queue.xml
+-rw-r--r--  1 root root   64 Nov 30 11:33 secret.key
+-rw-r--r--  1 root root    0 Nov 30 11:33 secret.key.not-so-secret
+drwx------  4 root root 4096 Nov 30 11:33 secrets
+drwxr-xr-x  3 root root 4096 Nov 30 11:33 users
+drwxr-xr-x 10 root root 4096 Nov 30 11:33 war
+```
+
+---
+
+- Jenkins starting point is config.xml; if its broken then it will fail to start!
+- good read: https://wiki.jenkins.io/display/JENKINS/Administering+Jenkins
+- First plugins are downloaded to this location: /usr/share/jenkins/ref/plugins and then they are moved to JENKINS_HOME

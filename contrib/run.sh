@@ -1,4 +1,6 @@
 #!/bin/bash
+# set -ex will print commands
+
 #
 # This script runs the Jenkins server inside the Docker container.
 #
@@ -75,12 +77,17 @@ function install_plugins() {
     plugins_file=$(mktemp)
     IFS=',' read -ra plugins <<< "${INSTALL_PLUGINS}"
     for plugin in "${plugins[@]}"; do
+      # echo "${plugin}"
       echo "${plugin}" >> "${plugins_file}"
     done
 
+    echo ${plugins_file}
+    cat ${plugins_file}
+
     # Call install plugins with the temporary file
     echo "Calling install-plugins.sh"
-    /usr/local/bin/install-plugins.sh "${plugins_file}"
+    # /usr/local/bin/install-plugins.sh "${plugins_file}"
+    /usr/local/bin/install-plugins.sh $(cat ${plugins_file} | tr '\n' ' ')
   fi
 
   # TODO fix this!
@@ -163,11 +170,10 @@ if [ ! -e ${JENKINS_HOME}/configured ]; then
     echo "Copying Jenkins configuration to ${JENKINS_HOME} ..."
     cp -r ${IMAGE_CONFIG_DIR}/configuration/* ${JENKINS_HOME}
 
-    echo "Installing plugins"
+    echo "Calling install_plugins"
     install_plugins
 
     echo "Creating initial Jenkins 'admin' user ..."
-    
     update_admin_password
 
     touch ${JENKINS_HOME}/configured

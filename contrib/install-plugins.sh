@@ -7,13 +7,14 @@
 
 set -o pipefail
 
+# TODO: sort of hard coding? ensure it exists!
 REF_DIR=${REF:-/usr/share/jenkins/ref/plugins}
 FAILED="$REF_DIR/failed-plugins.txt"
 
 . /usr/local/bin/jenkins-support.sh
 
 getLockFile() {
-    printf '%s' "$REF_DIR/${1}.lock"
+    printf '%s' "$REF_DIR${1}.lock"
 }
 
 getArchiveFilename() {
@@ -130,7 +131,7 @@ resolveDependencies() {
 }
 
 bundledPlugins() {
-    local JENKINS_WAR=/usr/share/jenkins/jenkins.war
+    local JENKINS_WAR=${JENKINS_WAR_PATH}/jenkins.war
     if [ -f $JENKINS_WAR ]
     then
         TEMP_PLUGIN_DIR=/tmp/plugintemp.$$
@@ -191,6 +192,7 @@ main() {
     # Read plugins from stdin or from the command line arguments
     if [[ ($# -eq 0) ]]; then
         while read -r line; do
+            echo line
             plugins+=("${line}")
         done
     else
@@ -200,6 +202,7 @@ main() {
     # Create lockfile manually before first run to make sure any explicit version set is used.
     echo "Creating initial locks..."
     for plugin in "${plugins[@]}"; do
+        echo ${plugin}
         mkdir "$(getLockFile "${plugin%%:*}")"
     done
 
