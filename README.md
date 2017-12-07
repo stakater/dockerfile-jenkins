@@ -9,25 +9,31 @@ This Dockerfile is based on following:
 - [OpenShift Jenkins](https://github.com/openshift/jenkins)
 - [JenkinsCI Dockerfile for Jenkins for Alpine](https://github.com/jenkinsci/docker/tree/alpine)
 
+## Things to know
+
+- Jenkins starting point is `config.xml`; if its broken then it will fail to start!
+- Jenkins version 2 doesn't come with embedded with any plugins; so, it will "barf" if there is no plugins in the plugins directory of Jenkins home folder
+- good read: https://wiki.jenkins.io/display/JENKINS/Administering+Jenkins
+- First plugins are downloaded to this location: /usr/share/jenkins/ref/plugins and then they are moved to JENKINS_HOME
+- OpenShift runs processes with user id 1001 and group 0; but we don't need that on k8s; see keep open eyes when you copy stuff
+- the released versions of plugins are downloaded as provided in the list; but custom plugins will be required to be copied into the image
+- in case of k8s the all the important "configs" are provided as configmap and they override what is in the docker image
+- `run.sh` is the starting point
+- `kube-slave-common.sh` creates jenkins k8s plugin config I think
+- `fix-permissions.sh` is used to change permission in RUN; but I don't think we need on k8s as we already change ownership
+- `assemble.sh` is used to move stuff
+- `install-plugins.sh` to install plugins
+
 ## ToDo's
 
-- [ ] remove from base image
-```
-RUN     addgroup stakater && \
-        adduser -S -G stakater stakater && \
-        adduser -S -G stakater sudo
-
-# Expose the working directory
-VOLUME 	["/home/stakater"]
-```
-- fix installation of plugins! that stops Jenkins from starting...
-- [ ] run a plain jenkins without any plugins!
-- [ ] update to latest version of Jenkins
+- [x] update to latest version of Jenkins
+- [ ] copy the missing commands needed from https://github.com/openshift/jenkins specifically the RUN part
+- [ ] fix installation of plugins! that stops Jenkins from starting!
 - [ ] remove openshift pieces from run.sh
-- [ ] use JRE instead of JDK
-- [ ] ensure final running application (jenkins) becomes the container’s PID 1. 
-- [ ] ensure it can't have root access
-- [ ] remove stakater user, group and volume from the base folder
+- [ ] remove openshift pieces from other shell scripts if any!
+- [ ] add custom plugins which can be added through a folder look assemble.sh line 25 - which is needed when we modify plugins ourselves
+- [ ] ensure that Jenkins process is run by base image
+- [ ] ensure it can't have root access; so, it must be Jenkins user
 
 ## Source
 
@@ -227,6 +233,7 @@ RUN curl https://pkg.jenkins.io/redhat-stable/jenkins.repo -o /etc/yum.repos.d/j
     yum clean all  && \
     localedef -f UTF-8 -i en_US en_US.UTF-8
 
+# why do they copy stuff into different directories? I couldn't understand it!
 COPY ./contrib/openshift /opt/openshift
 COPY ./contrib/jenkins /usr/local/bin
 ADD ./contrib/s2i /usr/libexec/s2i
@@ -353,6 +360,3 @@ drwxr-xr-x 10 root root 4096 Nov 30 11:33 war
 
 ---
 
-- Jenkins starting point is config.xml; if its broken then it will fail to start!
-- good read: https://wiki.jenkins.io/display/JENKINS/Administering+Jenkins
-- First plugins are downloaded to this location: /usr/share/jenkins/ref/plugins and then they are moved to JENKINS_HOME

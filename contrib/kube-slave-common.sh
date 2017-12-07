@@ -4,8 +4,6 @@
 # that the Kubernetes plugin will use to create "slave" pods.
 # The image streams has to have label "role" set to "jenkins-slave".
 #
-# TODO: is this needed on Kubernetes?
-#
 # The Jenkins container also need permissions to access the OpenShift API to
 # list image streams. You have to run this command to allow that:
 #
