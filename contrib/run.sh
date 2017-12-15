@@ -90,12 +90,11 @@ function install_plugins() {
     /usr/local/bin/install-plugins.sh $(cat ${plugins_file} | tr '\n' ' ')
   fi
 
-  # TODO fix this!
-  if [ "$(ls -A /opt/openshift/plugins 2>/dev/null)" ]; then
+  if [ "$(ls -A /usr/share/jenkins/ref/plugins 2>/dev/null)" ]; then
     mkdir -p ${JENKINS_HOME}/plugins
-    echo "Copying $(ls /opt/openshift/plugins | wc -l) Jenkins plugins to ${JENKINS_HOME} ..."
-    cp -r /opt/openshift/plugins/* ${JENKINS_HOME}/plugins/
-    rm -rf /opt/openshift/plugins
+    echo "Copying $(ls /usr/share/jenkins/ref/plugins | wc -l) Jenkins plugins to ${JENKINS_HOME}/plugins/ ..."
+    cp -r /usr/share/jenkins/ref/plugins/* ${JENKINS_HOME}/plugins/
+    rm -rf /usr/share/jenkins/ref/plugins/
   fi
 }
 
@@ -105,6 +104,7 @@ function install_plugins() {
 
 image_config_dir=${IMAGE_CONFIG_DIR}
 image_config_path="${image_config_dir}/config.xml"
+
 
 CONTAINER_MEMORY_IN_BYTES=`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`
 DEFAULT_MEMORY_CEILING=$((2**40-1))
@@ -149,19 +149,24 @@ fi
 
 # Since OpenShift runs this Docker image under random user ID, we have to assign
 # the 'jenkins' user name to this UID.
-## generate_passwd_file
+echo "Generating Password file"
+generate_passwd_file
 
-## mkdir /tmp/war
-# TODO: bad its hardcoded! Need to uncomment it
-## unzip -q ${JENKINS_WAR_PATH}/jenkins.war -d /tmp/war
-## if [ -e ${JENKINS_HOME}/password ]; then
-##  old_salt=$(cat ${JENKINS_HOME}/password | sed 's/:.*//')
-## fi
-## new_password_hash=`obfuscate_password ${JENKINS_PASSWORD:-password} $old_salt`
+# Temporarily uncommited. How is this hardcoded if we provide $JENKINS_PASSWORD via config map?
+mkdir /tmp/war
 
-# finish the move of the default logs dir, /var/log/jenkins, to the volume mount
+echo "Unzipping jenkins.war"
+unzip -q ${JENKINS_WAR_PATH}/jenkins.war -d /tmp/war
+if [ -e ${JENKINS_HOME}/password ]; then
+ old_salt=$(cat ${JENKINS_HOME}/password | sed 's/:.*//')
+fi
+echo "Obfuscating new password"
+new_password_hash=`obfuscate_password ${JENKINS_PASSWORD:-password} $old_salt`
+
+#finish the move of the default logs dir, /var/log/jenkins, to the volume mount
 mkdir ${JENKINS_HOME}/logs
 ln -sf ${JENKINS_HOME}/logs /var/log/jenkins
+
 
 if [ ! -e ${JENKINS_HOME}/configured ]; then
     # This container hasn't been configured yet
@@ -177,23 +182,23 @@ if [ ! -e ${JENKINS_HOME}/configured ]; then
     update_admin_password
 
     touch ${JENKINS_HOME}/configured
-else  
+else
   if [ ! -z "${OVERRIDE_PV_CONFIG_WITH_IMAGE_CONFIG}" ]; then
     echo "Overriding jenkins config.xml stored in ${JENKINS_HOME}/config.xml"
     rm -f ${JENKINS_HOME}/config.xml
-	
+
     create_jenkins_config_xml
 
     cp -r ${image_config_path} ${JENKINS_HOME}
   fi
-    
+
   if [ ! -z "${OVERRIDE_PV_PLUGINS_WITH_IMAGE_PLUGINS}" ]; then
     echo "Overriding plugins stored in ${JENKINS_HOME}/plugins"
     rm -rf ${JENKINS_HOME}/plugins
 
     echo "Installing plugins"
     install_plugins
-  fi  
+  fi
 fi
 
 if [ -e ${JENKINS_HOME}/password ]; then
@@ -228,10 +233,12 @@ JENKINS_SERVICE_NAME=${JENKINS_SERVICE_NAME:-JENKINS}
 JENKINS_SERVICE_NAME=`echo ${JENKINS_SERVICE_NAME} | tr '[a-z]' '[A-Z]' | tr '-' '_'`
 JAVA_OPTS="${JAVA_OPTS} -Djavamelody.application-name=${JENKINS_SERVICE_NAME}"
 
+# Own JENKINS_HOME
+chown -R ${JENKINS_USER}:${JENKINS_USER} ${JENKINS_HOME} /usr/share/jenkins/ref
 # if `docker run` first argument start with `--` the user is passing jenkins launcher arguments
-# TODO: hardcoded - /usr/lib/jenkins/jenkins.war ??
 if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]]; then
-   exec java $JAVA_GC_OPTS $JAVA_INITIAL_HEAP_PARAM $JAVA_MAX_HEAP_PARAM -Duser.home=${HOME} $JAVA_CORE_LIMIT $JAVA_DIAGNOSTICS $JAVA_OPTS -Dfile.encoding=UTF8 -jar ${JENKINS_WAR_PATH}/jenkins.war $JENKINS_OPTS $JENKINS_ACCESSLOG "$@"
+  #Run via JENKINS_USER
+   su-exec ${JENKINS_USER} java $JAVA_GC_OPTS $JAVA_INITIAL_HEAP_PARAM $JAVA_MAX_HEAP_PARAM -Duser.home=${HOME} $JAVA_CORE_LIMIT $JAVA_DIAGNOSTICS $JAVA_OPTS -Dfile.encoding=UTF8 -jar ${JENKINS_WAR_PATH}/jenkins.war $JENKINS_OPTS $JENKINS_ACCESSLOG "$@"
 fi
 
 # As argument is not jenkins, assume user want to run his own process, for sample a `bash` shell to explore this image

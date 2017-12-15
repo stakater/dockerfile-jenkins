@@ -27,13 +27,13 @@ This Dockerfile is based on following:
 ## ToDo's
 
 - [x] update to latest version of Jenkins
-- [ ] copy the missing commands needed from https://github.com/openshift/jenkins specifically the RUN part
-- [ ] fix installation of plugins! that stops Jenkins from starting!
-- [ ] remove openshift pieces from run.sh
-- [ ] remove openshift pieces from other shell scripts if any!
+- [x] copy the missing commands needed from https://github.com/openshift/jenkins specifically the RUN part
+- [x] fix installation of plugins! that stops Jenkins from starting!
+- [x] remove openshift pieces from run.sh
+- [x] remove openshift pieces from other shell scripts if any!
 - [ ] add custom plugins which can be added through a folder look assemble.sh line 25 - which is needed when we modify plugins ourselves
-- [ ] ensure that Jenkins process is run by base image
-- [ ] ensure it can't have root access; so, it must be Jenkins user
+- [x] ensure that Jenkins process is run by base image
+- [x] ensure it can't have root access; so, it must be Jenkins user
 
 ## Source
 
@@ -359,4 +359,3 @@ drwxr-xr-x 10 root root 4096 Nov 30 11:33 war
 ```
 
 ---
-

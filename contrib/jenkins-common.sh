@@ -29,5 +29,5 @@ function obfuscate_password {
 
     # source for password-encoder.jar is inside the jar.
     # acegi-security-1.0.7.jar is inside the jenkins war.
-    java -classpath "${acegi_security_path}:${commons_codec_path}:/opt/openshift/password-encoder.jar" com.redhat.openshift.PasswordEncoder $password $salt
+    java -classpath "${acegi_security_path}:${commons_codec_path}:${IMAGE_CONFIG_DIR}/password-encoder.jar" com.redhat.openshift.PasswordEncoder $password $salt
 }

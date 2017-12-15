@@ -1,4 +1,4 @@
-FROM stakater/oracle-jdk:8u144-alpine-3.6
+FROM stakater/oracle-jdk:8u152-alpine-3.7
 
 MAINTAINER Stakater Team
 
@@ -18,6 +18,7 @@ ARG INSTALL_PLUGINS=ace-editor:1.1,async-http-client:1.7.8,ant:1.5,antisamy-mark
 
 ## Environment Variables
 
+ENV JENKINS_USER ${USER}
 ENV INSTALL_PLUGINS ${INSTALL_PLUGINS}
 ENV IMAGE_CONFIG_DIR /usr/local/bin
 ENV JENKINS_WAR_PATH /usr/share/jenkins
@@ -32,28 +33,26 @@ ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
 RUN apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils gettext
 
 # Jenkins is run with USER `jenkins`, UID = 386
-# If you bind mount a volume from the host or a data container, 
+# If you bind mount a volume from the host or a data container,
 # ensure you use the same UID; and then things will work happily!
 RUN addgroup -g ${GID} ${GROUP} \
     && adduser -h "$JENKINS_HOME" -u ${UID} -G ${GROUP} -s /bin/bash -D ${USER}
 
-# Jenkins home directory is a volume, so configuration and build history 
+# Jenkins home directory is a volume, so configuration and build history
 # can be persisted and survive image upgrades
 VOLUME /var/jenkins_home
 
-# `/usr/share/jenkins/ref/` contains all reference configuration we want 
-# to set on a fresh new installation. Use it to bundle additional plugins 
+# `/usr/share/jenkins/ref/` contains all reference configuration we want
+# to set on a fresh new installation. Use it to bundle additional plugins
 # or config file with your custom jenkins Docker image.
 RUN mkdir -p /usr/share/jenkins/ref/init.groovy.d
 
-## TODO: is this needed? why is it needed?
+## This is used to modify the jenkins slave agent port to 5000 as specified in JENKINS_SLAVE_AGENT_PORT env
 COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groovy
 
-# could use ADD but this one does not check Last-Modified header neither does it allow to control checksum 
+# could use ADD but this one does not check Last-Modified header neither does it allow to control checksum
 # see https://github.com/docker/docker/issues/8331
 RUN curl -fsSL ${JENKINS_URL} -o ${JENKINS_WAR_PATH}/jenkins.war
-
-RUN chown -R ${USER} "$JENKINS_HOME" /usr/share/jenkins/ref
 
 ## Expose
 
@@ -64,15 +63,7 @@ EXPOSE ${AGENT_PORT}
 
 COPY ./contrib ${IMAGE_CONFIG_DIR}
 
-## TODO - need to fix following:
 # Make daemon service dir for jenkins and place file
 # It will be started and maintained by the base image
-# RUN mkdir -p /etc/service/jenkins
-# ADD jenkins.sh /etc/service/jenkins/run
-
-## TODO : need to uncomment it!
-# USER ${USER}
-
-# ENTRYPOINT ["/usr/local/bin/run.sh"]
-ENTRYPOINT []
-CMD ["/usr/local/bin/run.sh"]
+RUN mkdir -p /etc/service/jenkins
+COPY ./contrib/run.sh /etc/service/jenkins/run
