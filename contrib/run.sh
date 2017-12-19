@@ -96,6 +96,12 @@ function install_plugins() {
     cp -r /usr/share/jenkins/ref/plugins/* ${JENKINS_HOME}/plugins/
     rm -rf /usr/share/jenkins/ref/plugins/
   fi
+
+# Copy external plugins
+  if [ "$(ls -A ${IMAGE_CONFIG_DIR}/plugins 2>/dev/null)" ]; then
+    cp -r ${IMAGE_CONFIG_DIR}/plugins/* ${JENKINS_HOME}/plugins/
+    rm -rf ${IMAGE_CONFIG_DIR}/plugins/
+  fi
 }
 
 # echo $JAVA_HOME
