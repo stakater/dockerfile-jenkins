@@ -43,7 +43,7 @@ https://hub.docker.com/r/jenkins/jenkins/
 ## Plugins
 
 ### Required
-
+* openshiftsync (This is a direct dependency of `kubernetes-pipeline-plugin` which we are using for Kubernetes IT)
 
 ## Others
 
