@@ -249,11 +249,11 @@ echo "Running chown"
 chown -R ${JENKINS_USER}:${JENKINS_USER} ${JENKINS_HOME} /usr/share/jenkins/ref
 
 # if `docker run` first argument start with `--` the user is passing jenkins launcher arguments
-if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]]; then
+#if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]]; then
   #Run via JENKINS_USER
   echo "Running Jenkins now"
   su-exec ${JENKINS_USER} java $JAVA_GC_OPTS $JAVA_INITIAL_HEAP_PARAM $JAVA_MAX_HEAP_PARAM -Duser.home=${HOME} $JAVA_CORE_LIMIT $JAVA_DIAGNOSTICS $JAVA_OPTS -Dfile.encoding=UTF8 -jar ${JENKINS_WAR_PATH}/jenkins.war $JENKINS_OPTS $JENKINS_ACCESSLOG "$@"
-fi
+#fi
 
 # As argument is not jenkins, assume user want to run his own process, for sample a `bash` shell to explore this image
-exec "$@"
+# exec "$@"
