@@ -174,7 +174,7 @@ new_password_hash=`obfuscate_password ${JENKINS_PASSWORD:-password} $old_salt`
 mkdir -p ${JENKINS_HOME}/logs
 ln -sf ${JENKINS_HOME}/logs /var/log/jenkins
 
-
+echo "Checking {JENKINS_HOME}/configured"
 if [ ! -e ${JENKINS_HOME}/configured ]; then
     # This container hasn't been configured yet
     create_jenkins_config_from_templates
@@ -208,6 +208,7 @@ else
   fi
 fi
 
+echo "Checking {JENKINS_HOME}/password"
 if [ -e ${JENKINS_HOME}/password ]; then
   # if the password environment variable has changed, update the jenkins config.
   # we don't want to just blindly do this on startup because the user might change their password via
@@ -220,13 +221,16 @@ if [ -e ${JENKINS_HOME}/password ]; then
   fi
 fi
 
+echo "Checking {CONFIG_PATH}.tpl"
 if [ -f "${CONFIG_PATH}.tpl" -a ! -f "${CONFIG_PATH}" ]; then
   echo "Processing Jenkins configuration (${CONFIG_PATH}.tpl) ..."
   envsubst < "${CONFIG_PATH}.tpl" > "${CONFIG_PATH}"
 fi
 
+echo "Removing war file"
 rm -rf /tmp/war
 
+# TODO: @Waseem: what is this?
 # default log rotation in /etc/logrotate.d/jenkins handles /var/log/jenkins/access_log
 if [ ! -z "${OPENSHIFT_USE_ACCESS_LOG}" ]; then
     JENKINS_ACCESSLOG="--accessLoggerClassName=winstone.accesslog.SimpleAccessLogger --simpleAccessLogger.format=combined --simpleAccessLogger.file=/var/log/jenkins/access_log"
@@ -241,6 +245,7 @@ JENKINS_SERVICE_NAME=`echo ${JENKINS_SERVICE_NAME} | tr '[a-z]' '[A-Z]' | tr '-'
 JAVA_OPTS="${JAVA_OPTS} -Djavamelody.application-name=${JENKINS_SERVICE_NAME}"
 
 # Own JENKINS_HOME
+echo "Running chown"
 chown -R ${JENKINS_USER}:${JENKINS_USER} ${JENKINS_HOME} /usr/share/jenkins/ref
 # if `docker run` first argument start with `--` the user is passing jenkins launcher arguments
 if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]]; then
