@@ -245,8 +245,9 @@ JENKINS_SERVICE_NAME=`echo ${JENKINS_SERVICE_NAME} | tr '[a-z]' '[A-Z]' | tr '-'
 JAVA_OPTS="${JAVA_OPTS} -Djavamelody.application-name=${JENKINS_SERVICE_NAME}"
 
 # Own JENKINS_HOME
-echo "Running chown"
-chown -R ${JENKINS_USER}:${JENKINS_USER} ${JENKINS_HOME} /usr/share/jenkins/ref
+#echo "Running chown"
+#chown -R ${JENKINS_USER}:${JENKINS_USER} ${JENKINS_HOME} /usr/share/jenkins/ref
+#echo "Done chown"
 
 # if `docker run` first argument start with `--` the user is passing jenkins launcher arguments
 #if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]]; then
