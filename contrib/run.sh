@@ -171,7 +171,7 @@ echo "Obfuscating new password"
 new_password_hash=`obfuscate_password ${JENKINS_PASSWORD:-password} $old_salt`
 
 #finish the move of the default logs dir, /var/log/jenkins, to the volume mount
-mkdir ${JENKINS_HOME}/logs
+mkdir -p ${JENKINS_HOME}/logs
 ln -sf ${JENKINS_HOME}/logs /var/log/jenkins
 
 
