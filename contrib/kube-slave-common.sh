@@ -58,20 +58,8 @@ export JENKINS_PASSWORD KUBERNETES_SERVICE_HOST KUBERNETES_SERVICE_PORT
 export K8S_PLUGIN_POD_TEMPLATES=""
 export PATH=$PATH:${JENKINS_HOME}/.local/bin
 
-function has_service_account() {
-  [ -f "${AUTH_TOKEN}" ]
-}
-
-if has_service_account; then
-  export oc_auth="--token=$(cat $AUTH_TOKEN) --certificate-authority=${KUBE_CA}"
-  export oc_cmd="oc --server=$OPENSHIFT_API_URL ${oc_auth}"
-  export oc_serviceaccount_name="$(expr "$(oc whoami)" : 'system:serviceaccount:[a-z0-9][-a-z0-9]*:\([a-z0-9][-a-z0-9]*\)' || true)"
-fi
-
 # generate_kubernetes_config generates a configuration for the kubernetes plugin
 function generate_kubernetes_config() {
-    [ -z "$oc_cmd" ] && return
-    [ ! has_service_account ] && return
     local crt_contents=$(cat "${KUBE_CA}")
     echo "
     <org.csanchez.jenkins.plugins.kubernetes.KubernetesCloud>
