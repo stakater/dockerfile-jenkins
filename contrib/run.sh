@@ -247,8 +247,6 @@ JAVA_OPTS="${JAVA_OPTS} -Djavamelody.application-name=${JENKINS_SERVICE_NAME}"
 # Own JENKINS_HOME
 owner=`stat -c "%U:%G" "${JENKINS_HOME}"`
 owner2=`stat -c "%U:%G" /usr/share/jenkins/`
-echo $owner
-echo $owner2
 if [ "${owner}" != "${JENKINS_USER}:${JENKINS_USER}" -a "${owner2}" != "${JENKINS_USER}:${JENKINS_USER}" ] then
   echo "Running Chown"
   chown -R ${JENKINS_USER}:${JENKINS_USER} ${JENKINS_HOME} /usr/share/jenkins/ref
