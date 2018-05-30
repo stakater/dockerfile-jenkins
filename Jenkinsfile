@@ -8,7 +8,7 @@ try {
     versionPrefix = "1.0"
 }
 
-pushCustomDockerImage {
+pushDockerImageFromMakefile {
     versionPrefix = versionPrefix
     dockerRegistryURL = "docker.io"
 }
