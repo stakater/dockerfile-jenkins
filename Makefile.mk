@@ -14,6 +14,11 @@
 #   limitations under the License.
 #
 
+# If you set the environment variables with same name as variables then they will be used otherwise default
+# values will be used.
+REGISTRY_HOST ?= docker.io
+USERNAME ?= stakater
+NAME ?= jenkins
 
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 IMAGE=$(REGISTRY_HOST)/$(USERNAME)/$(NAME)
@@ -30,16 +35,11 @@ build: pre-build docker-build post-build
 
 pre-build:
 
-
 post-build:
-
 
 pre-push:
 
-
 post-push:
-
-
 
 docker-build: .release
 	docker build $(DOCKER_BUILD_ARGS) -t $(IMAGE):$(VERSION) . --network=host
@@ -60,7 +60,6 @@ docker-build: .release
 
 
 release: check-status check-release build push
-
 
 push: pre-push do-push post-push 
 
@@ -90,7 +89,6 @@ minor-release: tag-minor-release release
 
 major-release: tag-major-release release
 	@echo $(VERSION)
-
 
 tag: TAG=$(shell . $(RELEASE_SUPPORT) ; getVersion)
 tag: check-status
